@@ -1,0 +1,7 @@
+rss_url: "https://sspai.com/feed/tag/free-apps"
+filter:
+  keywords: ["效率", "工具", "生产力", "学习", "专业"]
+  exclude_keywords: ["游戏", "壁纸", "铃声"]
+telegram:
+  bot_token: "你的TG_BOT_TOKEN"
+  chat_id: "你的频道ID"

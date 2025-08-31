@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>精品限免 App 列表</title>
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+</head>
+<body>
+  <header>
+    <h1>精品限免 App 列表</h1>
+    <form method="get" action="/">
+      <input type="text" name="q" placeholder="搜索App..." value="{{ query }}" />
+      <button type="submit">搜索</button>
+      <a href="{{ url_for('main.fetch') }}" onclick="event.preventDefault(); fetchApps();">手动抓取</a>
+    </form>
+    <script>
+      function fetchApps() {
+        fetch('{{ url_for("main.fetch") }}', {method: 'POST'})
+          .then(() => window.location.reload());
+      }
+    </script>
+  </header>
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <table>
+      <thead>
+        <tr>
+          <th>标题</th>
+          <th>描述</th>
+          <th>链接</th>
+          <th>推送状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in apps %}
+        <tr>
+          <td>{{ app.title }}</td>
+          <td>{{ app.desc|truncate(80) }}</td>
+          <td><a href="{{ app.link }}" target="_blank">查看</a></td>
+          <td>{% if app.pushed %}✅{% else %}❌{% endif %}</td>
+          <td>
+            <a href="{{ url_for('main.push', app_id=app.id) }}">手动推送</a>
+            <a href="{{ url_for('main.delete', app_id=app.id) }}">删除</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

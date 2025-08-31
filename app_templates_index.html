@@ -3,58 +3,74 @@
 <head>
   <meta charset="utf-8">
   <title>精品限免 App 列表</title>
-  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
-</head>
-<body>
-  <header>
-    <h1>精品限免 App 列表</h1>
-    <form method="get" action="/">
-      <input type="text" name="q" placeholder="搜索App..." value="{{ query }}" />
-      <button type="submit">搜索</button>
-      <a href="{{ url_for('main.fetch') }}" onclick="event.preventDefault(); fetchApps();">手动抓取</a>
-    </form>
-    <script>
-      function fetchApps() {
-        fetch('{{ url_for("main.fetch") }}', {method: 'POST'})
-          .then(() => window.location.reload());
-      }
-    </script>
-  </header>
-  <main>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-          {% for msg in messages %}
-            <li>{{ msg }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    <table>
-      <thead>
-        <tr>
-          <th>标题</th>
-          <th>描述</th>
-          <th>链接</th>
-          <th>推送状态</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for app in apps %}
-        <tr>
-          <td>{{ app.title }}</td>
-          <td>{{ app.desc|truncate(80) }}</td>
-          <td><a href="{{ app.link }}" target="_blank">查看</a></td>
-          <td>{% if app.pushed %}✅{% else %}❌{% endif %}</td>
-          <td>
-            <a href="{{ url_for('main.push', app_id=app.id) }}">手动推送</a>
-            <a href="{{ url_for('main.delete', app_id=app.id) }}">删除</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </main>
-</body>
-</html>
+  <style>
+    body {
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') center center/cover no-repeat, linear-gradient(135deg,#e0e0e0 0%,#f9f9f9 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      /* 背景动感流动 */
+      animation: bgmove 18s linear infinite alternate;
+    }
+    @keyframes bgmove {
+      0% {background-position: 0 0, 0 0;}
+      100% {background-position: 40px 40px, 0 0;}
+    }
+    .liquid-glass-wrapper {
+      max-width: 900px;
+      margin: 48px auto;
+      padding: 32px;
+      position: relative;
+      background: rgba(255,255,255,0.10);
+      border-radius: 32px;
+      box-shadow: 0 12px 60px rgba(0,0,0,0.18);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 2px solid rgba(255,255,255,0.28);
+      overflow: hidden;
+    }
+    /* 液态高光流动动画 */
+    .liquid-glass-wrapper::before {
+      content: "";
+      position: absolute;
+      top: -18%;
+      left: -18%;
+      width: 150%;
+      height: 150%;
+      z-index: 0;
+      background: radial-gradient(ellipse at 35% 18%, rgba(255,255,255,0.24) 0%, transparent 70%),
+                  linear-gradient(120deg, rgba(255,255,255,0.10) 30%, rgba(255,255,255,0.03) 100%);
+      mix-blend-mode: screen;
+      filter: blur(32px);
+      animation: liquidmove 9s infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes liquidmove {
+      0% { transform: scale(1) translateY(0px) translateX(0px);}
+      60% { transform: scale(1.08) translateY(24px) translateX(12px);}
+      100% { transform: scale(1.13) translateY(48px) translateX(36px);}
+    }
+    .liquid-glass-wrapper > * { position: relative; z-index: 1; }
+    h1 {
+      text-align: center;
+      margin-bottom: 32px;
+      color: #222;
+      text-shadow: 0 2px 12px rgba(255,255,255,0.18);
+      letter-spacing: 1px;
+    }
+    form {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    input[type="text"] {
+      border-radius: 14px;
+      border: 1.5px solid #d4d4d4;
+      padding: 10px 20px;
+      margin-right: 8px;
+      font-size: 17px;
+      background: rgba(255,255,255,0.23);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+      outline: none;
+      transition: border .2s;
+    }
